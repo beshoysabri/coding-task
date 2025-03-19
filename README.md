@@ -1,35 +1,39 @@
 # Battery Data Pipeline
 
-This project processes battery time series data from the measurements_coding_challenge.csv file, performs data cleansing and transformation operations, and outputs the results to a CSV file.
+A comprehensive data processing and visualization pipeline for battery time series data. This project analyzes battery metrics, cleans the data, generates visualizations, and creates a PDF report with insights.
 
-## Features
+## Overview
 
-- **Data Cleaning**:
-  - Handles missing values and invalid data formats (`n/a`, `null` strings)
-  - Converts columns to appropriate data types
-  - Removes outliers based on statistical analysis
-  - Handles corrupt values
+This pipeline processes battery time series data from CSV files, performing cleaning operations, transformations, and visualizations. The pipeline handles common data quality issues such as missing values, incorrect data types, and inconsistent formatting. The processed data is visualized through multiple chart types and compiled into a professional PDF report.
 
-- **Data Transformation**:
-  - Calculates total grid purchase and feed-in by hour
-  - Identifies the hour with highest grid feed-in for each day
-  - Adds a boolean flag for the max feed-in hour
-
-- **Containerization**:
-  - Complete Docker setup for easy deployment
-  - Configurable input/output paths via environment variables
-
-## Project Structure
+## File Structure
 
 ```
 .
-├── battery_data_pipeline.py    # Main application code
-├── data/                       # Data directory for CSV files
-│   └── measurements_coding_challenge.csv  # Input data file
-├── Dockerfile                  # Docker configuration
-├── README.md                   # This documentation file
-├── build_and_run.sh            # Helper script to build and run the container
-└── requirements.txt            # Python dependencies
+├── analysis/                        # Generated visualizations and report
+│   ├── battery_comparison.png       # Battery performance comparison chart
+│   ├── battery_data_report.pdf      # Generated PDF report
+│   ├── feedin_proportion.png        # Pie chart of grid feedin distribution
+│   ├── grid_activity_heatmap.png    # Heatmap of grid activity
+│   ├── grid_metrics_distribution.png # Distribution of grid metrics
+│   ├── grid_metrics_time_series.png # Time series of grid metrics
+│   ├── hourly_grid_activity.png     # Hourly grid activity chart
+│   └── total_grid_metrics_by_hour.png # Hourly grid metrics
+├── data/                            # Data files
+│   ├── cleaned_battery_data.csv     # Output from the pipeline
+│   └── measurements_coding_challenge.csv # Input data file
+├── battery_data_pipeline.py         # Main data processing script
+├── build_and_run.bat                # Windows script (pipeline only)
+├── build_and_run.sh                 # Linux/macOS script (pipeline only)
+├── build_and_run_charts.bat         # Windows script (pipeline + charts)
+├── build_and_run_charts.sh          # Linux/macOS script (pipeline + charts)
+├── build_and_run_charts_report.bat  # Windows script (full pipeline with PDF)
+├── build_and_run_charts_report.sh   # Linux/macOS script (full pipeline with PDF)
+├── Dockerfile                       # Docker configuration
+├── generate_charts.py               # Visualization generation script
+├── generate_pdf_report.py           # PDF report generation script
+├── README.md                        # This documentation file
+└── requirements.txt                 # Python dependencies
 ```
 
 ## Prerequisites
@@ -39,57 +43,81 @@ This project processes battery time series data from the measurements_coding_cha
 
 ## Quick Start
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/battery-data-pipeline.git
-   cd battery-data-pipeline
-   ```
+### Step 1: Clone the repository
 
-2. Copy the input CSV file to the data directory:
-   ```
-   mkdir -p data
-   cp /path/to/measurements_coding_challenge.csv data/
-   ```
-
-3. Build and run the pipeline using the helper script:
-   ```
-   chmod +x build_and_run.sh
-   ./build_and_run.sh
-   ```
-
-4. Find the cleaned data in `data/cleaned_battery_data.csv`
-
-## Manual Docker Commands
-
-If you prefer to run the Docker commands manually:
-
-1. Build the Docker image:
-   ```
-   docker build -t battery-data-pipeline .
-   ```
-
-2. Run the container:
-   ```
-   docker run --rm -v $(pwd)/data:/app/data battery-data-pipeline
-   ```
-
-## Configuration
-
-You can configure the pipeline using environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| INPUT_FILE | Path to input CSV file | /app/data/measurements_coding_challenge.csv |
-| OUTPUT_FILE | Path to output CSV file | /app/data/cleaned_battery_data.csv |
-
-Example with custom paths:
+```bash
+git clone https://github.com/yourusername/battery-data-pipeline.git
+cd battery-data-pipeline
 ```
-docker run --rm \
-  -v $(pwd)/data:/app/data \
-  -e INPUT_FILE=/app/data/my_custom_input.csv \
-  -e OUTPUT_FILE=/app/data/my_custom_output.csv \
-  battery-data-pipeline
+
+### Step 2: Prepare the input data
+
+Copy your input CSV file to the `data` directory:
+
+```bash
+mkdir -p data
+cp /path/to/measurements_coding_challenge.csv data/
 ```
+
+### Step 3: Run the pipeline
+
+Choose one of the following scripts based on your needs:
+
+#### Basic Pipeline (Data Cleaning Only)
+
+**Linux/macOS:**
+```bash
+chmod +x build_and_run.sh
+./build_and_run.sh
+```
+
+**Windows:**
+```
+build_and_run.bat
+```
+
+#### Pipeline with Charts
+
+**Linux/macOS:**
+```bash
+chmod +x build_and_run_charts.sh
+./build_and_run_charts.sh
+```
+
+**Windows:**
+```
+build_and_run_charts.bat
+```
+
+#### Complete Pipeline with Charts and PDF Report
+
+**Linux/macOS:**
+```bash
+chmod +x build_and_run_charts_report.sh
+./build_and_run_charts_report.sh
+```
+
+**Windows:**
+```
+build_and_run_charts_report.bat
+```
+
+## Execution Options
+
+This pipeline offers multiple execution options to fit different needs:
+
+1. **Basic Data Pipeline** (`build_and_run.*`)
+   - Cleans and processes the raw battery data
+   - Outputs `cleaned_battery_data.csv`
+
+2. **Data Pipeline with Visualizations** (`build_and_run_charts.*`)
+   - Runs the data pipeline
+   - Generates visualizations in the `analysis` directory
+
+3. **Complete Pipeline with PDF Report** (`build_and_run_charts_report.*`)
+   - Runs the data pipeline
+   - Generates visualizations
+   - Creates a comprehensive PDF report
 
 ## Input Data Format
 
@@ -98,58 +126,61 @@ The application expects a semicolon-delimited CSV file with the following column
 - `serial`: Serial number identifying the battery
 - `grid_purchase`: Energy purchased from the grid
 - `grid_feedin`: Energy fed back to the grid
-- `direct_consumption`: Direct energy consumption (often null in the source data)
+- `direct_consumption`: Direct energy consumption
 - `date`: Date in YYYY-MM-DD format
 
-The input file may contain data quality issues like:
-- Missing values represented as empty strings
-- Invalid values represented as "n/a" or "null" strings
-- Incorrect data types
+## Output Files
 
-## Output Data Format
+### Cleaned Data
+The pipeline produces a cleaned CSV file (`data/cleaned_battery_data.csv`) with:
+- Properly formatted timestamps
+- Correct data types
+- No missing values
+- Additional calculated metrics
 
-The output CSV will contain all original columns plus:
-- `hour_of_day`: Hour extracted from timestamp
-- `total_grid_purchase`: Sum of grid purchases across all batteries for that hour
-- `total_grid_feedin`: Sum of grid feed-in across all batteries for that hour
-- `is_max_feedin_hour`: Boolean flag indicating if this hour had the highest grid feed-in for the day
+### Visualizations
+The following charts are generated in the `analysis` directory:
+- **Hourly Grid Activity**: Line chart showing average grid purchase and feed-in by hour
+- **Total Grid Metrics by Hour**: Bar chart of total grid metrics across all batteries
+- **Grid Metrics Distribution**: Histograms of grid purchase and feed-in distributions
+- **Battery Comparison**: Bar chart comparing batteries' grid interactions
+- **Grid Activity Heatmap**: Heatmap showing activity patterns by hour and battery
+- **Grid Metrics Time Series**: Time series of grid metrics over time
+- **Feed-in Proportion**: Pie chart showing each battery's contribution to grid feed-in
 
-## Data Quality Handling
+### PDF Report
+A comprehensive PDF report (`analysis/battery_data_report.pdf`) with:
+- Executive summary of findings
+- Statistical analysis
+- All visualizations with explanations
+- Methodology and conclusions
 
-The pipeline handles various data quality issues:
+## Docker Details
 
-1. **Missing Values**:
-   - "n/a" in grid_purchase is replaced with 0
-   - "null" strings in direct_consumption are replaced with 0
-   - Empty cells are replaced with appropriate default values
-
-2. **Data Type Conversion**:
-   - Numeric columns are converted to proper numeric types
-   - Timestamps are properly parsed to datetime objects
-
-3. **Outlier Detection and Handling**:
-   - Uses IQR method to identify statistical outliers
-   - Outliers are capped at reasonable bounds rather than removed
+All processing occurs in Docker containers to ensure reproducibility:
+- The main pipeline uses `battery-data-pipeline` image
+- Visualization and reporting use `battery-data-viz` image
+- All dependencies are installed automatically
 
 ## Development
 
-### Running Locally (Without Docker)
+### Custom Processing
 
-1. Set up a Python virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+To customize the data processing, modify `battery_data_pipeline.py`.
 
-2. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+### Custom Visualizations
 
-3. Run the pipeline:
-   ```
-   python battery_data_pipeline.py
-   ```
+To add or modify visualizations, edit `generate_charts.py`.
+
+### Custom Reporting
+
+To change the PDF report structure or content, modify `generate_pdf_report.py`.
+
+## Troubleshooting
+
+- **Missing input file**: Ensure `measurements_coding_challenge.csv` is in the `data` directory
+- **Docker errors**: Make sure Docker is installed and running
+- **Permission issues**: Ensure the bash scripts have execution permissions (`chmod +x *.sh`)
 
 ## License
 
