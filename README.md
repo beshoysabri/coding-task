@@ -159,7 +159,7 @@ A comprehensive PDF report (`analysis/battery_data_report.pdf`) with:
 
 All processing occurs in Docker containers to ensure reproducibility:
 - The main pipeline uses `battery-data-pipeline` image
-- Visualization and reporting use `battery-data-viz` image
+- Visualization and reporting use `battery-data-viz` image ( Installed on-the-fly by the bash scripts)
 - All dependencies are installed automatically
 
 ## Development
@@ -181,6 +181,7 @@ To change the PDF report structure or content, modify `generate_pdf_report.py`.
 - **Missing input file**: Ensure `measurements_coding_challenge.csv` is in the `data` directory
 - **Docker errors**: Make sure Docker is installed and running
 - **Permission issues**: Ensure the bash scripts have execution permissions (`chmod +x *.sh`)
+- **Write Files Permissions issues**: Please Make Sure the Resulting files are closed on the OS before rerunning the scripts.
 
 ## License
 
