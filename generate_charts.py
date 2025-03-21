@@ -229,18 +229,6 @@ class BatteryDataVisualizer:
         # Calculate purchase to feedin ratio
         battery_metrics['purchase_feedin_ratio'] = battery_metrics['grid_purchase'] / battery_metrics['grid_feedin'].replace(0, 1)
         
-        # Annotate interesting batteries
-        for i, (_, row) in enumerate(battery_metrics.iterrows()):
-            if row['grid_feedin'] > row['grid_purchase']:
-                ax.annotate('Net Producer', 
-                           xy=(i + width/2, row['grid_feedin']),
-                           xytext=(0, 10), textcoords='offset points',
-                           ha='center', fontsize=8, color='green')
-            elif row['grid_purchase'] > 10 * row['grid_feedin'] and row['grid_feedin'] > 0:
-                ax.annotate('Heavy Consumer', 
-                           xy=(i - width/2, row['grid_purchase']),
-                           xytext=(0, 10), textcoords='offset points',
-                           ha='center', fontsize=8, color='red')
         
         # Customize the chart
         ax.set_xlabel('Battery ID (Serial)', fontsize=12)
