@@ -35,6 +35,12 @@ class PDFReport(FPDF):
         self.set_creator("Battery Data Pipeline")
         self.set_title(title)
         
+        # Set margins
+        self.set_margins(left=15, top=20, right=15)
+        
+        # Enable auto page break with a margin
+        self.set_auto_page_break(auto=True, margin=15)
+        
         # Initialize counters and trackers
         self.page_count = 0
         self.chapter_count = 0
@@ -104,10 +110,6 @@ class PDFReport(FPDF):
             logger.warning(f"Image not found: {image_path}")
             return False
         
-        # Check if we need a page break based on remaining space
-        if self.get_y() > 230:  # If less than ~60 units left, add page
-            self.add_page()
-        
         try:
             # Get the image dimensions
             img = Image.open(image_path)
@@ -116,18 +118,32 @@ class PDFReport(FPDF):
             # Calculate height based on aspect ratio and desired width
             height = width * img_height / img_width
             
+            # Calculate total space needed for image and caption
+            space_needed = height + (20 if caption else 0)  # Add extra space for caption
+            
+            # Check if we need a page break
+            # Add more margin to ensure charts don't overflow
+            if self.get_y() + space_needed > 240:  # Increased safety margin
+                self.add_page()
+            
+            # Current Y position after potential page break
+            y_position = self.get_y()
+            
             # Add the image
-            self.image(image_path, x=10, y=self.get_y(), w=width, h=height)
+            self.image(image_path, x=10, y=y_position, w=width, h=height)
             self.charts_added += 1
             
-            # Move below the image
-            self.ln(height + 5)
+            # Move position to below the image
+            self.set_y(y_position + height + 5)
             
             # Add caption if provided
             if caption:
                 self.set_font('Arial', 'I', 10)
-                self.cell(0, 10, f'Figure {self.charts_added}: {caption}', 0, 1, 'C')
+                self.multi_cell(0, 10, f'Figure {self.charts_added}: {caption}', 0, 'C')
                 self.ln(5)
+            
+            # Add extra space after chart
+            self.ln(5)
             
             return True
         
@@ -259,6 +275,7 @@ class BatteryReportGenerator:
         
         # Create PDF
         pdf = PDFReport("Battery Data Analysis Report")
+        pdf.set_auto_page_break(True, margin=15)  # Enable auto page break
         pdf.add_page()
         
         # Executive Summary
@@ -299,6 +316,7 @@ class BatteryReportGenerator:
         pdf.chapter_body(findings_text)
         
         # Charts section
+        pdf.add_page()  # Start charts on a new page
         pdf.chapter_title("Visualization Charts")
         
         pdf.chapter_body("The following charts visualize different aspects of the battery data, " + \
@@ -331,12 +349,13 @@ class BatteryReportGenerator:
             if chart_path not in sorted_charts:
                 sorted_charts.append(chart_path)
         
-        # Add all charts to the PDF
+        # Add all charts to the PDF - use a slightly smaller width for better fit
+        chart_width = 170  # Reduced from 180
         for chart_path in sorted_charts:
             caption = chart_descriptions.get(chart_path, os.path.basename(chart_path))
-            pdf.add_chart(chart_path, caption=caption)
+            pdf.add_chart(chart_path, caption=caption, width=chart_width)
         
-        # Methodology section
+        # Methodology section - start on a new page
         pdf.add_page()
         pdf.chapter_title("Methodology")
         
