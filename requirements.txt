@@ -1,23 +1,8 @@
-# Core data processing
 pandas==1.5.3
 numpy==1.24.3
 python-dateutil==2.8.2
 pytz==2023.3
-
-# Basic visualization
 matplotlib==3.7.1
 seaborn==0.12.2
-
-# PDF generation
 fpdf==1.7.2
 Pillow==9.4.0
-
-# Enhanced visualization capabilities
-plotly==5.13.0
-kaleido==0.2.1  # For static plotly exports
-statsmodels==0.13.0  # For statistical analysis
-bokeh==3.0.0  # For interactive visualizations
-holoviews==1.15.0  # For complex layered visualizations
-
-# Optional: Additional statistical tools
-scipy==1.10.1  # For advanced statistical operations

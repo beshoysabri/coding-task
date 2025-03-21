@@ -15,8 +15,6 @@ import matplotlib.dates as mdates
 import seaborn as sns
 from datetime import datetime
 import logging
-import plotly.express as px
-import plotly.graph_objects as go
 
 # Configure logging
 logging.basicConfig(
@@ -391,27 +389,6 @@ class BatteryDataVisualizer:
         fig.tight_layout()
         self.save_figure(fig, 'feedin_proportion.png')
     
-    def create_interactive_plot(self):
-        """Create interactive plots using Plotly."""
-        # Create interactive time series
-        fig = go.Figure()
-        
-        # Add traces with hover information
-        fig.add_trace(go.Scatter(
-            x=self.df['timestamp'],
-            y=self.df['grid_purchase'],
-            name='Grid Purchase',
-            hovertemplate='Time: %{x}<br>Value: %{y:.2f}<extra></extra>'
-        ))
-        
-        # Add statistical overlays
-        fig.add_trace(go.Scatter(
-            x=self.df['timestamp'],
-            y=self.df['grid_purchase'].rolling(24).mean(),
-            name='24-hour Moving Average',
-            line=dict(dash='dash')
-        ))
-    
     def generate_all_charts(self):
         """Generate all visualization charts."""
         logger.info("Starting visualization generation")
@@ -428,7 +405,6 @@ class BatteryDataVisualizer:
         self.plot_grid_activity_heatmap()
         self.plot_time_series()
         self.plot_feedin_proportion()
-        self.create_interactive_plot()
         
         logger.info("All visualizations completed successfully")
         return True
