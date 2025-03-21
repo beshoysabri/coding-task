@@ -148,6 +148,10 @@ The following charts are generated in the `analysis` directory:
 - **Grid Metrics Time Series**: Time series of grid metrics over time
 - **Feed-in Proportion**: Pie chart showing each battery's contribution to grid feed-in
 
+**NOTE:** Having only one day data in the given data table will render The Time Series chart as well the Total Grid Metrics Chart useless.
+         The Total Grid Metrics chart is intended to view the averaging of total metrics for multiple days, having one day in this case is useless.
+         Also the Timeseries becomes useless because it will only show the data for the single day ( same as the first chart )
+
 ### PDF Report
 A comprehensive PDF report (`analysis/battery_data_report.pdf`) with:
 - Executive summary of findings
